@@ -37,6 +37,7 @@ namespace Companies.API.Data
         {
             var faker = new Faker<Company>("sv").Rules((f, c) =>
             {
+                f.
                 c.Name = f.Company.CompanyName();
                 c.Address = $"{f.Address.StreetAddress()}, {f.Address.City()}";
                 c.Country = f.Address.Country();
