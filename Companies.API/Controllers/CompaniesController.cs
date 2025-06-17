@@ -10,7 +10,7 @@ using Companies.API.Entities;
 
 namespace Companies.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Companies")]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
@@ -25,7 +25,8 @@ namespace Companies.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Company>>> GetCompany()
         {
-            return await _context.Company.ToListAsync();
+            // return await _context.Company.ToListAsync();
+            return await _context.Company.Include(c => c.Employees).ToListAsync();
         }
 
         // GET: api/Companies/5
