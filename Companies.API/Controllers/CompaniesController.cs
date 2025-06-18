@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Companies.API.Data;
 using Companies.API.Entities;
 using Companies.API.DTOs;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 namespace Companies.API.Controllers
 {
@@ -16,10 +18,12 @@ namespace Companies.API.Controllers
     public class CompaniesController : ControllerBase
     {
         private readonly CompaniesContext _context;
+        private readonly IMapper _mapper;
 
-        public CompaniesController(CompaniesContext context)
+        public CompaniesController(CompaniesContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Companies
@@ -29,29 +33,41 @@ namespace Companies.API.Controllers
             // return await _context.Company.ToListAsync();
             // return await _context.Company.Include(c => c.Employees).ToListAsync();
 
-            var companies = _context.Company.Select(c => new CompanyDto
-            {
-                Id= c.Id,
-                Name = c.Name,
-                Address = c.Address,
-                Country = c.Country
-            });
+            //var companies = _context.Companies.Select(c => new CompanyDto
+            //{
+            //    Id = c.Id,
+            //    Name = c.Name,
+            //    Address = c.Address,
+            //    Country = c.Country
+            //});
 
-            return Ok(await companies.ToListAsync());
+            var companies = await _context.Companies.ProjectTo<CompanyDto>(_mapper.ConfigurationProvider).ToListAsync();
+
+            return Ok(companies);
         }
 
-        // GET: api/Companies/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Company>> GetCompany(int id)
+        // GET: api/Companies/1
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
-            var company = await _context.Company.FindAsync(id);
+            var company = await _context.Companies.FindAsync(id);
 
             if (company == null)
             {
                 return NotFound();
             }
 
-            return company;
+            //var dto = new CompanyDto
+            //{
+            //    Id = company.Id,
+            //    Name = company.Name,
+            //    Country = company.Country,
+            //    Address = company.Address
+            //};
+
+            var dto = _mapper.Map<CompanyDto>(company);
+
+            return dto;
         }
 
         // PUT: api/Companies/5
@@ -90,7 +106,7 @@ namespace Companies.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Company>> PostCompany(Company company)
         {
-            _context.Company.Add(company);
+            _context.Companies.Add(company);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCompany", new { id = company.Id }, company);
@@ -100,13 +116,13 @@ namespace Companies.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
-            var company = await _context.Company.FindAsync(id);
+            var company = await _context.Companies.FindAsync(id);
             if (company == null)
             {
                 return NotFound();
             }
 
-            _context.Company.Remove(company);
+            _context.Companies.Remove(company);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -114,7 +130,7 @@ namespace Companies.API.Controllers
 
         private bool CompanyExists(int id)
         {
-            return _context.Company.Any(e => e.Id == id);
+            return _context.Companies.Any(e => e.Id == id);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Companies.API.Data
                 var db = serviceProvider.GetRequiredService<CompaniesContext>();
 
                 await db.Database.MigrateAsync();
-                if(await db.Company.AnyAsync())
+                if(await db.Companies.AnyAsync())
                 {
                     return; // Database has been seeded
                 }
@@ -37,7 +37,7 @@ namespace Companies.API.Data
         {
             var faker = new Faker<Company>("sv").Rules((f, c) =>
             {
-                f.
+                
                 c.Name = f.Company.CompanyName();
                 c.Address = $"{f.Address.StreetAddress()}, {f.Address.City()}";
                 c.Country = f.Address.Country();
