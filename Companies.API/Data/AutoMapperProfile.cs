@@ -11,6 +11,7 @@ namespace Companies.API.Data
         {
             CreateMap<Company, CompanyDto>();
             CreateMap<Employee, EmployeeDto>();
+            CreateMap<CompanyCreateDto, Company>();
         }
 
 
