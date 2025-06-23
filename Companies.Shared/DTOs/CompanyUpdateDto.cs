@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace Companies.Shared.DTOs
 {
-    public record CompanyCreateDto : CompanyForManipulationDto
+    public record CompanyUpdateDto : CompanyForManipulationDto
     {
+        public int Id { get; set; }
+
         //[Required(ErrorMessage = "Company name is a required field.")]
         //[MaxLength(60, ErrorMessage = "Maximum length for the Name is 60 characters.")]
         //public string? Name { get; set; }

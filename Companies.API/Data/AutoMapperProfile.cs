@@ -9,9 +9,12 @@ namespace Companies.API.Data
     {
         public AutoMapperProfile()
         {
-            CreateMap<Company, CompanyDto>();
+            CreateMap<Company, CompanyDto>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom
+                (src => $"{src.Address}{(string.IsNullOrEmpty(src.Country) ? string.Empty : ", ")}{src.Country}"));
             CreateMap<Employee, EmployeeDto>();
             CreateMap<CompanyCreateDto, Company>();
+            CreateMap<CompanyUpdateDto, Company>();
         }
 
 
