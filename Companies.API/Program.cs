@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Companies.API.Data;
 using System.Threading.Tasks;
+using Companies.API.Services;
 
 namespace Companies.API
 {
@@ -25,6 +26,8 @@ namespace Companies.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+            builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 
             var app = builder.Build();
 
