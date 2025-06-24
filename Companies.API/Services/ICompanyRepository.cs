@@ -8,5 +8,6 @@ namespace Companies.API.Services
         Task<Company?> GetCompanyAsync(int id);
 
         void Add(Company company);
+        void Delete(Company company);
     }
 }

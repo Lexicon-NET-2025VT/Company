@@ -29,5 +29,10 @@ namespace Companies.API.Services
         {
             _context.Companies.Add(company);
         }
+
+        public void Delete(Company company)
+        {
+            _context.Companies.Remove(company);
+        }
     }
 }
