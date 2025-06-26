@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Entities;
 
-namespace Companies.API.Services
+namespace Domain.Contracts
 {
     public interface ICompanyRepository
     {

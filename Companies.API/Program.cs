@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using Companies.API.Services;
 using Companies.API.Extensions;
 using Companies.Infrastructure.Data;
+using Companies.Infrastructure.Repositories;
+using Domain.Contracts;
 
 namespace Companies.API
 {
@@ -30,6 +31,7 @@ namespace Companies.API
 
             // builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
             //builder.Services.AddCors(builder =>
             //{

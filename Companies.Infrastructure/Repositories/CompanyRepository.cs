@@ -1,8 +1,9 @@
 ﻿using Companies.Infrastructure.Data;
+using Domain.Contracts;
 using Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Companies.API.Services
+namespace Companies.Infrastructure.Repositories
 {
     public class CompanyRepository : ICompanyRepository
     {
