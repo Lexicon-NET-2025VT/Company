@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Companies.API.Data;
-using Companies.API.Entities;
 using Companies.API.DTOs;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Companies.Shared.DTOs;
 using Companies.API.Services;
+using Domain.Models.Entities;
 
 namespace Companies.API.Controllers
 {

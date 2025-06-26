@@ -1,4 +1,4 @@
-﻿using Companies.API.Entities;
+﻿using Domain.Models.Entities;
 
 namespace Companies.API.Services
 {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Companies.API.Data;
 using System.Threading.Tasks;
 using Companies.API.Services;
+using Companies.API.Extensions;
 
 namespace Companies.API
 {
@@ -30,13 +31,14 @@ namespace Companies.API
             // builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddCors(builder =>
-            {
-                builder.AddPolicy("AllowAll", p =>
-                p.AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
-            });
+            //builder.Services.AddCors(builder =>
+            //{
+            //    builder.AddPolicy("AllowAll", p =>
+            //    p.AllowAnyOrigin()
+            //    .AllowAnyHeader()
+            //    .AllowAnyMethod());
+            //});
+            builder.Services.ConfigureCors();
 
 
 

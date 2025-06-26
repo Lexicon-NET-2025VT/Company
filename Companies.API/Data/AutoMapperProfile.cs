@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Companies.API.Entities;
 using Companies.API.DTOs;
 using Companies.Shared.DTOs;
+using Domain.Models.Entities;
 
 namespace Companies.API.Data
 {

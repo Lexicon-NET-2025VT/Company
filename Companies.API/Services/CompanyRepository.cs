@@ -1,5 +1,5 @@
 ﻿using Companies.API.Data;
-using Companies.API.Entities;
+using Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Companies.API.Services
