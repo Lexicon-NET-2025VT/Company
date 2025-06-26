@@ -1,4 +1,4 @@
-﻿using Companies.API.Data;
+﻿using Companies.Infrastructure.Data;
 using Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 

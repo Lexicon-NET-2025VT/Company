@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Companies.API.Data;
 using System.Threading.Tasks;
 using Companies.API.Services;
 using Companies.API.Extensions;
+using Companies.Infrastructure.Data;
 
 namespace Companies.API
 {

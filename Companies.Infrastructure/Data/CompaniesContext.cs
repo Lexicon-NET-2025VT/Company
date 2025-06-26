@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models.Entities;
 
-namespace Companies.API.Data
+namespace Companies.Infrastructure.Data
 {
     public class CompaniesContext : DbContext
     {

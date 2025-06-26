@@ -1,5 +1,5 @@
 ﻿
-using Companies.API.Data;
+using Companies.Infrastructure.Data;
 
 namespace Companies.API.Services
 {

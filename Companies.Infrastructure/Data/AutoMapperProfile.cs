@@ -3,7 +3,7 @@ using Companies.API.DTOs;
 using Companies.Shared.DTOs;
 using Domain.Models.Entities;
 
-namespace Companies.API.Data
+namespace Companies.Infrastructure.Data
 {
     public class AutoMapperProfile : Profile
     {
