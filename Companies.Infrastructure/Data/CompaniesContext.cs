@@ -14,7 +14,9 @@ namespace Companies.Infrastructure.Data
         {
         }
 
-        public DbSet<Company> Companies { get; set; } = default!;
+        // public DbSet<Company> Companies { get; set; } = default!;
+        public DbSet<Company> Companies => Set<Company>();
+
         public DbSet<Employee> Employees { get; set; } = default!;
     }
 }

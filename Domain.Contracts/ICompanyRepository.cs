@@ -4,10 +4,10 @@ namespace Domain.Contracts
 {
     public interface ICompanyRepository
     {
-        Task<IEnumerable<Company>> GetCompaniesAsync(bool includeEmployees = false);
-        Task<Company?> GetCompanyAsync(int id);
+        Task<IEnumerable<Company>> GetCompaniesAsync(bool includeEmployees = false, bool trackChanges = false);
+        Task<Company?> GetCompanyAsync(int id, bool trackChanges = false);
 
-        void Add(Company company);
+        void Create(Company company);
         void Delete(Company company);
     }
 }
