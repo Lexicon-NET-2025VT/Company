@@ -7,12 +7,16 @@ namespace Companies.Infrastructure.Repositories
     {
         private readonly CompaniesContext _context;
         public ICompanyRepository CompanyRepository { get;}
+        public IEmployeeRepository EmployeeRepository { get; }
+
         // Fler repos
 
         public UnitOfWork(CompaniesContext context)
         {
             _context = context;
             CompanyRepository = new CompanyRepository(context);
+
+            EmployeeRepository = new EmployeeRepository(context);
         }
 
 

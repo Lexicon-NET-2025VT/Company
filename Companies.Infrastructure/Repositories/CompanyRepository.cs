@@ -31,6 +31,11 @@ namespace Companies.Infrastructure.Repositories
                                     : await FindAll(trackChanges).ToListAsync();
         }
 
+        public async Task<bool> CompanyExistAsync(int id)
+        {
+            return await Context.Companies.AnyAsync(c => c.Id == id);
+        }
+
         //public void Create(Company company)
         //{
         //    _context.Companies.Add(company);

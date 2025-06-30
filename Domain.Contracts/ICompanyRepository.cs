@@ -9,5 +9,7 @@ namespace Domain.Contracts
 
         void Create(Company company);
         void Delete(Company company);
+
+        Task<bool> CompanyExistAsync(int id);
     }
 }
