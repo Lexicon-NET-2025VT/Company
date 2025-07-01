@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Companies.Services
 {
-    internal class EmployeeService : IEmployeeService
+    public class EmployeeService : IEmployeeService
     {
         private IUnitOfWork _uow;
         private IMapper _mapper;

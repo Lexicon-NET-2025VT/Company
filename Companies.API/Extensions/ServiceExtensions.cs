@@ -1,6 +1,7 @@
 ﻿using Companies.Infrastructure.Repositories;
 using Companies.Services;
 using Domain.Contracts;
+using Microsoft.Identity.Client.Extensibility;
 using Services.Contracts;
 
 namespace Companies.API.Extensions
@@ -21,15 +22,35 @@ namespace Companies.API.Extensions
         public static void ConfigureServiceLayerServices(this IServiceCollection services)
         {
             services.AddScoped<IServiceManager, ServiceManager>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
+
+            services.AddScoped<ICompanyService, CompanyService>();
+            // services.AddScoped(provider => new Lazy<ICompanyService>(() => provider.GetRequiredService<ICompanyService>()));
+            services.AddLazy<ICompanyService>();
+            services.AddLazy<IEmployeeService>();
         }
 
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+            services.AddLazy<IEmployeeRepository>();
+            services.AddLazy<ICompanyRepository>();
         }
 
 
 
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddLazy<TService>(this IServiceCollection services) where TService : class
+        {
+            return services.AddScoped(provider => new Lazy<TService>(() => provider.GetRequiredService<TService>()));
+        }
     }
 
 

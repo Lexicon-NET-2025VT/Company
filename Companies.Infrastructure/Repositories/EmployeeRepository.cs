@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Companies.Infrastructure.Repositories
 {
-    internal class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
+    public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
     {
         public EmployeeRepository(CompaniesContext context) : base(context)
         {

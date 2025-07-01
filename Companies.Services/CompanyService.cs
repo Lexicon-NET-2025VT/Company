@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Companies.Services;
 
 namespace Companies.Services
 {
-    internal class CompanyService : ICompanyService
+    public class CompanyService : ICompanyService
     {
         private IUnitOfWork _uow;
         private readonly IMapper _mapper;

@@ -21,14 +21,22 @@ namespace Companies.Infrastructure.Repositories
 
         // Fler repos
 
-        public UnitOfWork(CompaniesContext context)
+        //public UnitOfWork(CompaniesContext context)
+        //{
+        //    _context = context;
+        //    //CompanyRepository = new CompanyRepository(context);
+        //    //EmployeeRepository = new EmployeeRepository(context);
+
+        //    companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(context));
+        //    employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
+        //}
+
+        public UnitOfWork(CompaniesContext context, Lazy<ICompanyRepository> companyrepository, Lazy<IEmployeeRepository> employeerepository)
         {
             _context = context;
-            //CompanyRepository = new CompanyRepository(context);
-            //EmployeeRepository = new EmployeeRepository(context);
+            companyRepository = companyrepository;
+            employeeRepository = employeerepository;
 
-            companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(context));
-            employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
         }
 
 

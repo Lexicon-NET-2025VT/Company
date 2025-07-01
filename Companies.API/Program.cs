@@ -38,6 +38,8 @@ namespace Companies.API
             // builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             // builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
+
+
             builder.Services.ConfigureServiceLayerServices();
             builder.Services.ConfigureRepositories();
 
