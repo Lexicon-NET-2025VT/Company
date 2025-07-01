@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using Companies.API.Extensions;
+﻿using Companies.API.Extensions;
 using Companies.Infrastructure.Data;
 using Companies.Infrastructure.Repositories;
-using Domain.Contracts;
-using Services.Contracts;
 using Companies.Services;
-using System.Reflection.Metadata;
+using Domain.Contracts;
+using Domain.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Build.Execution;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Services.Contracts;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 
 namespace Companies.API
 {
@@ -43,6 +45,21 @@ namespace Companies.API
             builder.Services.ConfigureServiceLayerServices();
             builder.Services.ConfigureRepositories();
 
+            builder.Services.AddAuthentication();
+            builder.Services.AddIdentityCore<ApplicationUser>(opt =>
+            {
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 3;
+            }
+            ).AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<CompaniesContext>()
+            .AddDefaultTokenProviders();
+
+
+
 
             builder.Services.ConfigureCors();
 
@@ -60,6 +77,7 @@ namespace Companies.API
 
             app.UseCors("AllowAll");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
