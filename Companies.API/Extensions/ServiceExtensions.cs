@@ -1,4 +1,9 @@
-﻿namespace Companies.API.Extensions
+﻿using Companies.Infrastructure.Repositories;
+using Companies.Services;
+using Domain.Contracts;
+using Services.Contracts;
+
+namespace Companies.API.Extensions
 {
     public static class ServiceExtensions
     {
@@ -12,5 +17,20 @@
                 .AllowAnyMethod());
             });
         }
+
+        public static void ConfigureServiceLayerServices(this IServiceCollection services)
+        {
+            services.AddScoped<IServiceManager, ServiceManager>();
+        }
+
+        public static void ConfigureRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+        }
+
+
+
     }
+
+
 }

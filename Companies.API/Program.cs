@@ -7,6 +7,8 @@ using Companies.Infrastructure.Repositories;
 using Domain.Contracts;
 using Services.Contracts;
 using Companies.Services;
+using System.Reflection.Metadata;
+using Microsoft.Build.Execution;
 
 namespace Companies.API
 {
@@ -19,7 +21,8 @@ namespace Companies.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CompaniesContext") ?? throw new InvalidOperationException("Connection string 'CompaniesContext' not found.")));
 
             builder.Services.AddControllers(configure => configure.ReturnHttpNotAcceptable = true)
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson()
+                .AddApplicationPart(typeof(AssemblyReference).Assembly);
                 // .AddXmlDataContractSerializerFormatters();
 
 
@@ -32,20 +35,14 @@ namespace Companies.API
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
             // builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            // builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            // builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
+            builder.Services.ConfigureServiceLayerServices();
+            builder.Services.ConfigureRepositories();
 
 
-            //builder.Services.AddCors(builder =>
-            //{
-            //    builder.AddPolicy("AllowAll", p =>
-            //    p.AllowAnyOrigin()
-            //    .AllowAnyHeader()
-            //    .AllowAnyMethod());
-            //});
             builder.Services.ConfigureCors();
-
-
 
             var app = builder.Build();
 

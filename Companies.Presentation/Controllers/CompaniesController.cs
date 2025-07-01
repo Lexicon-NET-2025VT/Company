@@ -4,29 +4,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 using Companies.API.DTOs;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
+
 using Companies.Shared.DTOs;
 using Domain.Models.Entities;
 using Domain.Contracts;
 using Services.Contracts;
 
-namespace Companies.API.Controllers
+namespace Companies.Presentation.Controllers
 {
     [Route("api/Companies")]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
-        // private readonly CompaniesContext _context;
-        //private readonly IMapper _mapper;
         private readonly IServiceManager _serviceManager;
-
-        // private readonly IUnitOfWork _uow;
-
-        // private readonly ICompanyRepository _companyRepo;
 
         public CompaniesController(IServiceManager serviceManager)
         {
@@ -37,27 +28,7 @@ namespace Companies.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CompanyDto>>> GetCompany(bool includeEmployees)
         {
-            // return await _context.Company.ToListAsync();
-            // return await _context.Company.Include(c => c.Employees).ToListAsync();
-
-            //var companies = _context.Companies.Select(c => new CompanyDto
-            //{
-            //    Id = c.Id,
-            //    Name = c.Name,
-            //    Address = c.Address,
-            //    Country = c.Country
-            //});
-
-            // var companies = await _context.Companies.ProjectTo<CompanyDto>(_mapper.ConfigurationProvider).ToListAsync();
-
-            //var companies = includeEmployees ? _mapper.Map<IEnumerable<CompanyDto>>(await _context.Companies.Include(c => c.Employees).ToListAsync())
-            //                 : _mapper.Map<IEnumerable<CompanyDto>>(await _context.Companies.ToListAsync());
-
-            //var companies = includeEmployees ? _mapper.Map<IEnumerable<CompanyDto>>(await _uow.CompanyRepository.GetCompaniesAsync(true))
-            //                : _mapper.Map<IEnumerable<CompanyDto>>(await _uow.CompanyRepository.GetCompaniesAsync());
-
             var companyDtos = await _serviceManager.CompanyService.GetCompaniesAsync(includeEmployees);
-
             return Ok(companyDtos);
         }
 
@@ -67,32 +38,12 @@ namespace Companies.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
-            // Company? company = await _context.Companies.FindAsync(id);
-            // Company? company = await _uow.CompanyRepository.GetCompanyAsync(id);
-
-            //if (company == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var dto = new CompanyDto
-            //{
-            //    Id = company.Id,
-            //    Name = company.Name,
-            //    Country = company.Country,
-            //    Address = company.Address
-            //};
-
-            // var dto = _mapper.Map<CompanyDto>(company);
-
             CompanyDto dto = await _serviceManager.CompanyService.GetCompanyAsync(id);
-
             return Ok(dto);
         }
 
 
         //// PUT: api/Companies/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         //[HttpPut("{id}")]
         //public async Task<IActionResult> PutCompany(int id, CompanyUpdateDto dto)
         //{
@@ -142,7 +93,5 @@ namespace Companies.API.Controllers
 
         //    return NoContent();
         //}
-
-
     }
 }

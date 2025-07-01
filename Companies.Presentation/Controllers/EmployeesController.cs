@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+// using Microsoft.EntityFrameworkCore;
 using Companies.Shared.DTOs;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Domain.Models.Entities;
-using Companies.Infrastructure.Data;
+// using Companies.Infrastructure.Data;
 using Domain.Contracts;
 
-namespace Companies.API.Controllers
+namespace Companies.Presentation.Controllers
 {
     [Route("api/companies/{companyId}/employees")]
     [ApiController]
@@ -38,13 +38,8 @@ namespace Companies.API.Controllers
             {
                 return NotFound();
             }
-
-            // var employees = await _context.Employees.Where(e => e.CompanyId.Equals(companyId)).ToListAsync();
             var employees = await _uow.EmployeeRepository.GetEmployeesAsync(companyId);
-
-
             var employeesDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
-
 
             return Ok(employeesDtos);
         }
@@ -109,7 +104,6 @@ namespace Companies.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id, int companyId)
         {
-            // var companyExist = await _context.Companies.AnyAsync(c => c.Id.Equals(companyId));
             var companyExist = await _uow.CompanyRepository.CompanyExistAsync(companyId);
 
             if(!companyExist)
@@ -117,7 +111,6 @@ namespace Companies.API.Controllers
                 return NotFound("Company not found");
             }
 
-            // var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id.Equals(id) && e.CompanyId.Equals(companyId));
             var employee = await _uow.EmployeeRepository.GetEmployeeAsync(companyId, id);
 
             if (employee == null)
@@ -125,9 +118,7 @@ namespace Companies.API.Controllers
                 return NotFound("Employee not found");
             }
 
-            // _context.Employees.Remove(employee);
             _uow.EmployeeRepository.Delete(employee);
-            //await _context.SaveChangesAsync();
             await _uow.CompleteAsync();
 
             return NoContent();
@@ -138,18 +129,16 @@ namespace Companies.API.Controllers
         {
             if (patchDocument is null) return BadRequest("No patchdocument");
 
-            // var companyExist = await _context.Companies.AnyAsync(c => c.Id.Equals(companyId));
             var companyExist = await _uow.CompanyRepository.CompanyExistAsync(companyId);
 
             if (!companyExist) return NotFound("Company does not exist");
 
-            // var employeeToPatch = await _context.Employees.FirstOrDefaultAsync(e => e.Id.Equals(id) && e.CompanyId.Equals(companyId));
             var employeeToPatch = await _uow.EmployeeRepository.GetEmployeeAsync(companyId, id, trackChanges: true);
 
             if (employeeToPatch == null) return NotFound("Employee does not exist");
 
             var dto = _mapper.Map<EmployeeUpdateDto>(employeeToPatch);
-            patchDocument.ApplyTo(dto, ModelState); // Här patchas dto:n ihop med patchdokumentet.
+            // patchDocument.ApplyTo(dto, ModelState); // Todo: check, not working. Här patchas dto:n ihop med patchdokumentet.
             TryValidateModel(dto);
 
             if(!ModelState.IsValid)
@@ -158,7 +147,6 @@ namespace Companies.API.Controllers
             }
 
             _mapper.Map(dto, employeeToPatch);
-            // await _context.SaveChangesAsync();
             await _uow.CompleteAsync();
 
             return NoContent();
