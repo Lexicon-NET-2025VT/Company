@@ -28,6 +28,8 @@ namespace Companies.API.Extensions
             // services.AddScoped(provider => new Lazy<ICompanyService>(() => provider.GetRequiredService<ICompanyService>()));
             services.AddLazy<ICompanyService>();
             services.AddLazy<IEmployeeService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddLazy<IAuthService>();
         }
 
         public static void ConfigureRepositories(this IServiceCollection services)
