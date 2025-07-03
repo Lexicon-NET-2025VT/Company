@@ -17,6 +17,7 @@ namespace Companies.Services
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private ApplicationUser? user;
 
         public AuthService(IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -44,6 +45,17 @@ namespace Companies.Services
             }
 
             return result;
+        }
+
+        public async Task<bool> ValidateUserAsync(UserForAuthDto userForAuthDto)
+        {
+            if (userForAuthDto is null)
+            {
+                throw new ArgumentNullException(nameof(userForAuthDto));
+            }
+
+            user = await userManager.FindByNameAsync(userForAuthDto.UserName);
+            return user != null && await userManager.CheckPasswordAsync(user, userForAuthDto.PassWord);
         }
     }
 }

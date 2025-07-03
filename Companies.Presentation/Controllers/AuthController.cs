@@ -22,5 +22,14 @@ namespace Companies.Presentation.Controllers
             var result = await serviceManager.AuthService.RegisterUserAsync(registrationDto);
             return result.Succeeded ? StatusCode(StatusCodes.Status201Created) : BadRequest(result.Errors);
         }
+
+        [HttpPost("login")]
+        public async Task<ActionResult> Authenticate(UserForAuthDto userForAuthDto)
+        {
+            if (!await serviceManager.AuthService.ValidateUserAsync(userForAuthDto))
+            {
+                return Unauthorized();
+            }
+        }
     }
 }

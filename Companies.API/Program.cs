@@ -4,12 +4,15 @@ using Companies.Infrastructure.Repositories;
 using Companies.Services;
 using Domain.Contracts;
 using Domain.Models.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Build.Execution;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Services.Contracts;
 using System.Reflection.Metadata;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Companies.API
@@ -45,7 +48,34 @@ namespace Companies.API
             builder.Services.ConfigureServiceLayerServices();
             builder.Services.ConfigureRepositories();
 
-            builder.Services.AddAuthentication();
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+                ArgumentNullException.ThrowIfNull(nameof(jwtSettings));
+
+                var secretKey = builder.Configuration["secretkey"];
+                ArgumentNullException.ThrowIfNull(secretKey, nameof(secretKey));
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                    ValidateLifetime = true
+                };
+            });
+
+
+
+
+
             builder.Services.AddIdentityCore<ApplicationUser>(opt =>
             {
                 opt.Password.RequireLowercase = false;
@@ -53,6 +83,7 @@ namespace Companies.API
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequiredLength = 3;
+                opt.User.RequireUniqueEmail = true;
             }
             ).AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<CompaniesContext>()

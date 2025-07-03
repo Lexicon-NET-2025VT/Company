@@ -10,6 +10,7 @@ using Companies.Shared.DTOs;
 using Domain.Models.Entities;
 using Domain.Contracts;
 using Services.Contracts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Companies.Presentation.Controllers
 {
@@ -36,6 +37,7 @@ namespace Companies.Presentation.Controllers
 
         // GET: api/Companies/1
         [HttpGet("{id:int}")]
+        [Authorize]
         public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
             CompanyDto dto = await _serviceManager.CompanyService.GetCompanyAsync(id);
