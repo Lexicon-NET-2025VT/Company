@@ -30,6 +30,10 @@ namespace Companies.Presentation.Controllers
             {
                 return Unauthorized();
             }
+
+            var token = new { Token = await serviceManager.AuthService.CreateTokenAsync() };
+
+            return Ok(token);
         }
     }
 }
