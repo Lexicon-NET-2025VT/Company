@@ -21,5 +21,9 @@ namespace Domain.Models.Entities
 
         // Navigation property to the Company entity
         public Company Company { get; set; }
+
+        public string? RefreshToken { get; set; }
+
+        public DateTime? RefreshTokenExpireTime { get; set; }
     }
 }

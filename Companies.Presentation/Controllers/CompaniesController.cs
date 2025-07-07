@@ -11,24 +11,34 @@ using Domain.Models.Entities;
 using Domain.Contracts;
 using Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Companies.Presentation.Controllers
 {
     [Route("api/Companies")]
     [ApiController]
+    // [Authorize]
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _serviceManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public CompaniesController(IServiceManager serviceManager)
+        public CompaniesController(IServiceManager serviceManager, UserManager<ApplicationUser> userManager)
         {
             _serviceManager = serviceManager;
+            this.userManager = userManager;
         }
 
         // GET: api/Companies
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<CompanyDto>>> GetCompany(bool includeEmployees)
         {
+            var auth = User.Identity.IsAuthenticated;
+            var userName = userManager.GetUserName(User);
+            var user = await userManager.GetUserAsync(User);
+
+
             var companyDtos = await _serviceManager.CompanyService.GetCompaniesAsync(includeEmployees);
             return Ok(companyDtos);
         }
@@ -38,6 +48,9 @@ namespace Companies.Presentation.Controllers
         // GET: api/Companies/1
         [HttpGet("{id:int}")]
         [Authorize]
+        //[Authorize(Roles = "Admin")]
+        //[AllowAnonymous]
+        //[Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<CompanyDto>> GetCompany(int id)
         {
             CompanyDto dto = await _serviceManager.CompanyService.GetCompanyAsync(id);

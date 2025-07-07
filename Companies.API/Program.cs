@@ -5,13 +5,16 @@ using Companies.Services;
 using Domain.Contracts;
 using Domain.Models.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Build.Execution;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Services.Contracts;
 using System.Reflection.Metadata;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,10 +28,19 @@ namespace Companies.API
             builder.Services.AddDbContext<CompaniesContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CompaniesContext") ?? throw new InvalidOperationException("Connection string 'CompaniesContext' not found.")));
 
-            builder.Services.AddControllers(configure => configure.ReturnHttpNotAcceptable = true)
-                .AddNewtonsoftJson()
-                .AddApplicationPart(typeof(AssemblyReference).Assembly);
-                // .AddXmlDataContractSerializerFormatters();
+            builder.Services.AddControllers(configure => 
+            {
+                configure.ReturnHttpNotAcceptable = true;
+                //// Alla måste vara Admins
+                //var policy = new AuthorizationPolicyBuilder()
+                //            .RequireAuthenticatedUser()
+                //            .RequireRole("Admin")
+                //            .Build();
+                //configure.Filters.Add(new AuthorizeFilter(policy));
+            })
+            .AddNewtonsoftJson()
+            .AddApplicationPart(typeof(AssemblyReference).Assembly);
+            // .AddXmlDataContractSerializerFormatters();
 
 
             // Add services to the container.
@@ -89,7 +101,17 @@ namespace Companies.API
             .AddEntityFrameworkStores<CompaniesContext>()
             .AddDefaultTokenProviders();
 
+            //builder.Services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("AdminPolicy", policy =>
+            //        policy.RequireRole("Admin")
+            //        .RequireClaim(ClaimTypes.NameIdentifier)
+            //        .RequireClaim(ClaimTypes.Role));
 
+            //    options.AddPolicy("EmployeePolicy", policy =>
+            //    policy.RequireRole("Employee"));
+
+            //});
 
 
             builder.Services.ConfigureCors();
