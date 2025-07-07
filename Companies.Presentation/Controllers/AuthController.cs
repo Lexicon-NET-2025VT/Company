@@ -31,7 +31,8 @@ namespace Companies.Presentation.Controllers
                 return Unauthorized();
             }
 
-            var token = new { Token = await serviceManager.AuthService.CreateTokenAsync() };
+            // var token = new { Token = await serviceManager.AuthService.CreateTokenAsync() };
+            TokenDto token = await serviceManager.AuthService.CreateTokenAsync(expireTime: true);
 
             return Ok(token);
         }

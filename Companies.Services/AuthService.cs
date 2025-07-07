@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,14 +34,41 @@ namespace Companies.Services
         }
 
 
+        //public async Task<string> CreateTokenAsync()
+        //{
+        //    SigningCredentials signing = GetSigningCredentials();
+        //    IEnumerable<Claim> claims = await GetClaimsAsync();
+        //    JwtSecurityToken tokenOptions = GenerateTokenOptions(signing, claims);
 
-        public async Task<string> CreateTokenAsync()
+        //    return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        //}
+
+        public async Task<TokenDto> CreateTokenAsync(bool expireTime)
         {
+            ArgumentNullException.ThrowIfNull(nameof(user));
             SigningCredentials signing = GetSigningCredentials();
             IEnumerable<Claim> claims = await GetClaimsAsync();
             JwtSecurityToken tokenOptions = GenerateTokenOptions(signing, claims);
 
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            user!.RefreshToken = GenerateRefreshToken();
+
+            if(expireTime)
+            { user.RefreshTokenExpireTime = DateTime.UtcNow.AddDays(7); }
+
+            var res = await userManager.UpdateAsync(user);
+            // Validera res
+
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+            return new TokenDto(accessToken, user.RefreshToken!);
+        }
+
+        private string? GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signing, IEnumerable<Claim> claims)
@@ -123,5 +151,54 @@ namespace Companies.Services
             user = await userManager.FindByNameAsync(userForAuthDto.UserName);
             return user != null && await userManager.CheckPasswordAsync(user, userForAuthDto.PassWord);
         }
+
+        public async Task<TokenDto> RefreshTokenAsync(TokenDto token)
+        {
+            ClaimsPrincipal principal = GetPrincipalFromExpiredToken(token.AccessToken);
+
+            ApplicationUser? user = await userManager.FindByNameAsync(principal.Identity?.Name!);
+
+            if (user == null || user.RefreshToken != token.RefreshToken || user.RefreshTokenExpireTime <= DateTime.UtcNow)
+            {
+                throw new ArgumentException("The TokenDto has some invalid values");
+            }
+
+            this.user = user;
+
+            return await CreateTokenAsync(expireTime: false);
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string accessToken)
+        {
+            var jwtSettings = config.GetSection("JwtSettings");
+            ArgumentNullException.ThrowIfNull(nameof(jwtSettings));
+
+            var secretKey = config["secretkey"];
+            ArgumentNullException.ThrowIfNull(nameof(secretKey));
+
+            var tokenValidationParams = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidateAudience = true,
+                ValidAudience = jwtSettings["Audience"],
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                ValidateLifetime = false // Ändras till false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            ClaimsPrincipal principal = tokenHandler.ValidateToken(accessToken, tokenValidationParams, out SecurityToken securityToken);
+
+            if(securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+
+            return principal;
+
+        }
     }
+    
 }
