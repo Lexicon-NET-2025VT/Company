@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Companies.Services;
+using Domain.Models.Exceptions;
 
 namespace Companies.Services
 {
@@ -31,6 +32,11 @@ namespace Companies.Services
         public async Task<CompanyDto> GetCompanyAsync(int id, bool trackChanges = false)
         {
             Company? company = await _uow.CompanyRepository.GetCompanyAsync(id);
+
+            if (company == null)
+            {
+                throw new CompanyNotFoundExeption(id);
+            }
 
             return _mapper.Map<CompanyDto>(company);
         }

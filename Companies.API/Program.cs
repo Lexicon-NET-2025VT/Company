@@ -60,29 +60,32 @@ namespace Companies.API
             builder.Services.ConfigureServiceLayerServices();
             builder.Services.ConfigureRepositories();
 
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-                ArgumentNullException.ThrowIfNull(nameof(jwtSettings));
+            builder.Services.ConfigureJwt(builder.Configuration);
 
-                var secretKey = builder.Configuration["secretkey"];
-                ArgumentNullException.ThrowIfNull(secretKey, nameof(secretKey));
 
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSettings["Issuer"],
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings["Audience"],
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-                    ValidateLifetime = true
-                };
-            });
+            //builder.Services.AddAuthentication(options =>
+            //{
+            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //}).AddJwtBearer(options =>
+            //{
+            //    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            //    ArgumentNullException.ThrowIfNull(nameof(jwtSettings));
+
+            //    var secretKey = builder.Configuration["secretkey"];
+            //    ArgumentNullException.ThrowIfNull(secretKey, nameof(secretKey));
+
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = true,
+            //        ValidIssuer = jwtSettings["Issuer"],
+            //        ValidateAudience = true,
+            //        ValidAudience = jwtSettings["Audience"],
+            //        ValidateIssuerSigningKey = true,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            //        ValidateLifetime = true
+            //    };
+            //});
 
 
 
@@ -117,6 +120,8 @@ namespace Companies.API
             builder.Services.ConfigureCors();
 
             var app = builder.Build();
+
+            app.ConfigureExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
