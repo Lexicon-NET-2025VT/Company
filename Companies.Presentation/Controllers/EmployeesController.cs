@@ -11,37 +11,47 @@ using Microsoft.AspNetCore.JsonPatch;
 using Domain.Models.Entities;
 // using Companies.Infrastructure.Data;
 using Domain.Contracts;
+using Domain.Models.Responses;
+using Services.Contracts;
 
 namespace Companies.Presentation.Controllers
 {
     [Route("api/companies/{companyId}/employees")]
     [ApiController]
-    public class EmployeesController : ControllerBase
+    public class EmployeesController : ApiControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _uow;
+        private readonly IServiceManager serviceManager;
 
-        public EmployeesController(IMapper mapper, IUnitOfWork uow)
+        public EmployeesController(IMapper mapper, IUnitOfWork uow, IServiceManager serviceManager)
         {
 
             _mapper = mapper;
             _uow = uow;
+            this.serviceManager = serviceManager;
         }
 
         // GET: api/companies/2/Employees
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(int companyId)
         {
-            // var companyExist = await _context.Companies.AnyAsync(c => c.Id == companyId);
-            var companyExist = await _uow.CompanyRepository.CompanyExistAsync(companyId);
-            if(!companyExist)
-            {
-                return NotFound();
-            }
-            var employees = await _uow.EmployeeRepository.GetEmployeesAsync(companyId);
-            var employeesDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            ApiBaseResponse response = await serviceManager.EmployeeService.GetEmployeesAsync(companyId);
+            return response.Success ? Ok(response.GetOkResult<IEnumerable<EmployeeDto>>()) : ProcessError(response);
 
-            return Ok(employeesDtos);
+
+
+
+            // var companyExist = await _context.Companies.AnyAsync(c => c.Id == companyId);
+            //var companyExist = await _uow.CompanyRepository.CompanyExistAsync(companyId);
+            //if(!companyExist)
+            //{
+            //    return NotFound();
+            //}
+            //var employees = await _uow.EmployeeRepository.GetEmployeesAsync(companyId);
+            //var employeesDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+
+            //return Ok(employeesDtos);
         }
 
         //// GET: api/Employees/5

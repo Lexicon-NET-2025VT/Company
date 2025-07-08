@@ -35,7 +35,7 @@ namespace Companies.Services
 
             if (company == null)
             {
-                throw new CompanyNotFoundExeption(id);
+                throw new CompanyNotFoundException(id);
             }
 
             return _mapper.Map<CompanyDto>(company);

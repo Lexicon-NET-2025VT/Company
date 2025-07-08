@@ -31,7 +31,7 @@ namespace Companies.Presentation.Controllers
 
         // GET: api/Companies
         [HttpGet]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<IEnumerable<CompanyDto>>> GetCompany(bool includeEmployees)
         {
             var auth = User.Identity.IsAuthenticated;
@@ -47,7 +47,7 @@ namespace Companies.Presentation.Controllers
 
         // GET: api/Companies/1
         [HttpGet("{id:int}")]
-        [Authorize]
+        // [Authorize]
         //[Authorize(Roles = "Admin")]
         //[AllowAnonymous]
         //[Authorize(Policy = "AdminPolicy")]

@@ -16,9 +16,9 @@ namespace Domain.Models.Exceptions
         }
     }
 
-    public class CompanyNotFoundExeption : NotFoundException
+    public class CompanyNotFoundException : NotFoundException
     {
-        public CompanyNotFoundExeption(int id) : base($"The company with id {id} is not found")
+        public CompanyNotFoundException(int id) : base($"The company with id {id} is not found")
         {
             
         }

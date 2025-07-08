@@ -5,6 +5,7 @@ using Domain.Models.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Client.Extensibility;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Services.Contracts;
 using System.Text;
 
@@ -35,6 +36,37 @@ namespace Companies.API.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddLazy<IAuthService>();
         }
+
+        // Swagger med tokens
+        public static void ConfigureOpenApi(this IServiceCollection services) =>
+        services.AddEndpointsApiExplorer()
+               .AddSwaggerGen(setup =>
+               {
+                   setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                   {
+                       In = ParameterLocation.Header,
+                       Description = "Place to add JWT with Bearer",
+                       Name = "Authorization",
+                       Type = SecuritySchemeType.Http,
+                       Scheme = "Bearer"
+                   });
+
+                   setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+                   {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Id = "Bearer",
+                                    Type = ReferenceType.SecurityScheme
+                                }
+                            },
+                            new List<string>()
+                        }
+                   });
+               });
+
 
         public static void ConfigureRepositories(this IServiceCollection services)
         {

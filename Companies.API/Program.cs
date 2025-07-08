@@ -47,8 +47,13 @@ namespace Companies.API
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            builder.Services.ConfigureOpenApi();
+            
+            //builder.Services.AddEndpointsApiExplorer();
+            //builder.Services.AddSwaggerGen();
+            
+            
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
             // builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
@@ -61,35 +66,6 @@ namespace Companies.API
             builder.Services.ConfigureRepositories();
 
             builder.Services.ConfigureJwt(builder.Configuration);
-
-
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //}).AddJwtBearer(options =>
-            //{
-            //    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-            //    ArgumentNullException.ThrowIfNull(nameof(jwtSettings));
-
-            //    var secretKey = builder.Configuration["secretkey"];
-            //    ArgumentNullException.ThrowIfNull(secretKey, nameof(secretKey));
-
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = true,
-            //        ValidIssuer = jwtSettings["Issuer"],
-            //        ValidateAudience = true,
-            //        ValidAudience = jwtSettings["Audience"],
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-            //        ValidateLifetime = true
-            //    };
-            //});
-
-
-
-
 
             builder.Services.AddIdentityCore<ApplicationUser>(opt =>
             {
