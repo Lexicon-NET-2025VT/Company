@@ -8,6 +8,9 @@ using Domain.Models.Entities;
 using Companies.Shared.Request;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Companies.Infrastructure.Data;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Companies.Presentation.Controllers
 {
@@ -15,8 +18,13 @@ namespace Companies.Presentation.Controllers
     [ApiController]
     public class SimpleController : ControllerBase
     {
-        public SimpleController()
+        private readonly CompaniesContext db;
+        private readonly IMapper mapper;
+
+        public SimpleController(CompaniesContext db, IMapper mapper)
         {
+            this.db = db;
+            this.mapper = mapper;
         }
 
 
@@ -35,6 +43,14 @@ namespace Companies.Presentation.Controllers
                 return BadRequest("Is not auth");
             }
 
+        }
+
+        [HttpGet("uniqueroute")]
+        public async Task<ActionResult<IEnumerable<CompanyDto>>> GetCompany2()
+        {
+            var companies = await db.Companies.ToListAsync();
+            var compDtos = mapper.Map<IEnumerable<CompanyDto>>(companies);
+            return Ok(compDtos);
         }
     }
 }

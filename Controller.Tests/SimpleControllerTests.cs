@@ -1,5 +1,7 @@
+using Companies.API.DTOs;
 using Companies.Presentation.Controllers;
 using Controller.Tests.Extensions;
+using Controller.Tests.TestFixtures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Utilities;
@@ -9,12 +11,34 @@ using System.Threading.Tasks;
 
 namespace Controller.Tests
 {
-    public class SimpleControllerTests
+    public class SimpleControllerTests : IClassFixture<DatabasFixture>
     {
+        private readonly DatabasFixture fixture;
+
+        public SimpleControllerTests(DatabasFixture fixture)
+        {
+            this.fixture = fixture;
+        }
+
+
+        [Fact]
+        public async Task GetCompany_ShouldReturnExpectedCount()
+        {
+            var sut = fixture.Sut;
+            var expectedCount = fixture.Context.Companies.Count();
+
+            var result = await sut.GetCompany2();
+
+            var okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
+            var items = Assert.IsType<List<CompanyDto>>(okObjectResult.Value);
+
+            Assert.Equal(expectedCount, items.Count);
+        }
+
         [Fact]
         public async Task GetCompany_Should_Return400()
         {
-            var sut = new SimpleController();
+            var sut = fixture.Sut;
             var res = await sut.GetCompany();
             var resultType = res.Result as BadRequestObjectResult;
             Assert.IsType<BadRequestObjectResult>(resultType);
@@ -33,7 +57,7 @@ namespace Controller.Tests
                 HttpContext = httpContextMock.Object
             };
 
-            var sut = new SimpleController();
+            var sut = fixture.Sut;
             sut.ControllerContext = controllerContext;
 
             var res = await sut.GetCompany();
@@ -50,7 +74,7 @@ namespace Controller.Tests
             //var mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
             //mockClaimsPrincipal.SetupGet(x => x.Identity.IsAuthenticated).Returns(false);
 
-            var sut = new SimpleController();
+            var sut = fixture.Sut;
             sut.SetUserIsAuth(false);
 
 
@@ -73,7 +97,7 @@ namespace Controller.Tests
         [Fact]
         public async Task GetCompany_IsAuth_ShouldReturn200()
         {
-            var sut = new SimpleController();
+            var sut = fixture.Sut;
             sut.SetUserIsAuth(true);
 
             var result = await sut.GetCompany();
