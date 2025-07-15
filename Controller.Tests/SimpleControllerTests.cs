@@ -39,6 +39,7 @@ namespace Controller.Tests
         public async Task GetCompany_Should_Return400()
         {
             var sut = fixture.Sut;
+            sut.SetUserIsAuth(false);
             var res = await sut.GetCompany();
             var resultType = res.Result as BadRequestObjectResult;
             Assert.IsType<BadRequestObjectResult>(resultType);
