@@ -23,10 +23,13 @@ namespace Controller.Tests
         private Mock<IEmployeeRepository> mockRepo;
         private Mock<UserManager<ApplicationUser>> userManager;
         private RepositoryController sut;
+        private Mock<IUnitOfWork> mockUow;
 
         public RepoControllerTest()
         {
-            mockRepo = new Mock<IEmployeeRepository>();
+            // mockRepo = new Mock<IEmployeeRepository>();
+
+            mockUow = new Mock<IUnitOfWork>();  
 
             var mapper = new Mapper(new MapperConfiguration(cfg =>
             {
@@ -36,15 +39,15 @@ namespace Controller.Tests
             var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
             userManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
 
-            sut = new RepositoryController(mockRepo.Object, mapper, userManager.Object);
+            sut = new RepositoryController(mockUow.Object, mapper, userManager.Object);
         }
 
         [Fact]
         public async Task GetEmployees_ShouldReturnAllEmployees()
         {
             var users = GetUsers();
-            mockRepo.Setup(x => x.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
-
+            // mockRepo.Setup(x => x.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
+            mockUow.Setup(x=> x.EmployeeRepository.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
             // sut.SetUserIsAuth(true);
 
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { UserName = "Kalle" });
@@ -59,6 +62,11 @@ namespace Controller.Tests
         }
 
 
+        [Fact]
+        public async Task GetEmployees_ShouldThrowExeptionIfUserNotFound()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetEmployees(1));
+        }
 
 
 
