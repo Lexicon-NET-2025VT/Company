@@ -17,18 +17,19 @@ namespace Companies.Presentation.Controllers.ControllersForTestDemo
 {
     [Route("api/repo/{id}")]
     [ApiController]
-    public class RepositoryController : ControllerBase
+    public class RepositoryController : ApiControllerBase
     {
         private readonly IUnitOfWork uow;
+        private readonly IServiceManager serviceManager;
 
         // private readonly IEmployeeRepository employeeRepo;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public RepositoryController(IUnitOfWork uow, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public RepositoryController(IServiceManager serviceManager, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             this.uow = uow;
-            // this.employeeRepo = employeeRepo;
+            this.serviceManager = serviceManager;
             this.mapper = mapper;
             this.userManager = userManager;
         }
@@ -36,15 +37,18 @@ namespace Companies.Presentation.Controllers.ControllersForTestDemo
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(int id)
         {
-            //var userId2 = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            //if (string.IsNullOrEmpty(userId2)) throw new NullReferenceException(nameof(userId2));
-
             var user = await userManager.GetUserAsync(User);
             if(user is null) throw new ArgumentException(nameof(user));
 
-            var employees = await uow.EmployeeRepository.GetEmployeesAsync(id);
-            var dto = mapper.Map<IEnumerable<EmployeeDto>>(employees);
-            return Ok(dto);
+            // var employees = await serviceManager.EmployeeService.GetEmployeesAsync(id);
+
+            var response = await serviceManager.EmployeeService.GetEmployeesAsync(id);
+
+            //var dto = mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            // return Ok(dto);
+
+            return response.Success ? Ok(response.GetOkResult<IEnumerable<EmployeeDto>>())
+                                   : ProcessError(response);
         }
     }
 }

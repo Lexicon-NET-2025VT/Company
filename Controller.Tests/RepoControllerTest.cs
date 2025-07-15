@@ -5,10 +5,12 @@ using Companies.Shared.DTOs;
 using Controller.Tests.Extensions;
 using Domain.Contracts;
 using Domain.Models.Entities;
+using Domain.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Moq;
+using Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,14 +26,15 @@ namespace Controller.Tests
         private Mock<UserManager<ApplicationUser>> userManager;
         private RepositoryController sut;
         private Mock<IUnitOfWork> mockUow;
+        private Mock<IServiceManager> serviceManagerMock;
+        private Mapper mapper;
 
         public RepoControllerTest()
         {
-            // mockRepo = new Mock<IEmployeeRepository>();
+            // mockUow = new Mock<IUnitOfWork>();  
+            serviceManagerMock = new Mock<IServiceManager>();
 
-            mockUow = new Mock<IUnitOfWork>();  
-
-            var mapper = new Mapper(new MapperConfiguration(cfg =>
+            mapper = new Mapper(new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<AutoMapperProfile>();
             }));
@@ -39,16 +42,20 @@ namespace Controller.Tests
             var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
             userManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
 
-            sut = new RepositoryController(mockUow.Object, mapper, userManager.Object);
+            sut = new RepositoryController(serviceManagerMock.Object, mapper, userManager.Object);
         }
 
         [Fact]
         public async Task GetEmployees_ShouldReturnAllEmployees()
         {
             var users = GetUsers();
-            // mockRepo.Setup(x => x.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
-            mockUow.Setup(x=> x.EmployeeRepository.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
-            // sut.SetUserIsAuth(true);
+
+            var dtos = mapper.Map<IEnumerable<EmployeeDto>>(users);
+            ApiBaseResponse baseResponse = new ApiOkResponse<IEnumerable<EmployeeDto>>(dtos);
+
+            // mockUow.Setup(x=> x.EmployeeRepository.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
+            serviceManagerMock.Setup(x => x.EmployeeService.GetEmployeesAsync(It.IsAny<int>())).ReturnsAsync(baseResponse);
+
 
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { UserName = "Kalle" });
 
