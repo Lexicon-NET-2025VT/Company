@@ -3,6 +3,7 @@ using Companies.Infrastructure.Data;
 using Companies.Presentation.Controllers.ControllersForTestDemo;
 using Companies.Shared.DTOs;
 using Controller.Tests.Extensions;
+using Controller.Tests.TestFixtures;
 using Domain.Contracts;
 using Domain.Models.Entities;
 using Domain.Models.Responses;
@@ -20,46 +21,45 @@ using System.Threading.Tasks;
 
 namespace Controller.Tests
 {
-    public class RepoControllerTest
+    public class RepoControllerTest : IClassFixture<RepoControllerFixture>
     {
-        private Mock<IEmployeeRepository> mockRepo;
-        private Mock<UserManager<ApplicationUser>> userManager;
-        private RepositoryController sut;
-        private Mock<IUnitOfWork> mockUow;
-        private Mock<IServiceManager> serviceManagerMock;
-        private Mapper mapper;
+        private readonly RepoControllerFixture fixture;
 
-        public RepoControllerTest()
+
+        public RepoControllerTest(RepoControllerFixture fixture)
         {
-            // mockUow = new Mock<IUnitOfWork>();  
-            serviceManagerMock = new Mock<IServiceManager>();
+            this.fixture = fixture;
 
-            mapper = new Mapper(new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<AutoMapperProfile>();
-            }));
 
-            var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
-            userManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
 
-            sut = new RepositoryController(serviceManagerMock.Object, mapper, userManager.Object);
+            //serviceManagerMock = new Mock<IServiceManager>();
+
+            //mapper = new Mapper(new MapperConfiguration(cfg =>
+            //{
+            //    cfg.AddProfile<AutoMapperProfile>();
+            //}));
+
+            //var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
+            //userManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
+
+            //sut = new RepositoryController(serviceManagerMock.Object, mapper, userManager.Object);
         }
 
         [Fact]
         public async Task GetEmployees_ShouldReturnAllEmployees()
         {
-            var users = GetUsers();
+            var users = fixture.GetUsers();
 
-            var dtos = mapper.Map<IEnumerable<EmployeeDto>>(users);
+            var dtos = fixture.Mapper.Map<IEnumerable<EmployeeDto>>(users);
             ApiBaseResponse baseResponse = new ApiOkResponse<IEnumerable<EmployeeDto>>(dtos);
 
             // mockUow.Setup(x=> x.EmployeeRepository.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
-            serviceManagerMock.Setup(x => x.EmployeeService.GetEmployeesAsync(It.IsAny<int>())).ReturnsAsync(baseResponse);
+            fixture.ServiceManagerMock.Setup(x => x.EmployeeService.GetEmployeesAsync(It.IsAny<int>())).ReturnsAsync(baseResponse);
 
 
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { UserName = "Kalle" });
+            fixture.UserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { UserName = "Kalle" });
 
-            var result = await sut.GetEmployees(1);
+            var result = await fixture.Sut.GetEmployees(1);
 
             // Asserta
             var okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -72,31 +72,31 @@ namespace Controller.Tests
         [Fact]
         public async Task GetEmployees_ShouldThrowExeptionIfUserNotFound()
         {
-            await Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetEmployees(1));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await fixture.Sut.GetEmployees(1));
         }
 
 
 
-        public List<ApplicationUser> GetUsers()
-        {
-            return new List<ApplicationUser>
-            {
-                new ApplicationUser
-                {
-                     Id = "1",
-                     Name = "Kalle",
-                     Age = 12,
-                     UserName = "Kalle"
-                },
-               new ApplicationUser
-                {
-                     Id = "2",
-                     Name = "Kalle",
-                     Age = 12,
-                     UserName = "Kalle"
-                },
-            };
+        //public List<ApplicationUser> GetUsers()
+        //{
+        //    return new List<ApplicationUser>
+        //    {
+        //        new ApplicationUser
+        //        {
+        //             Id = "1",
+        //             Name = "Kalle",
+        //             Age = 12,
+        //             UserName = "Kalle"
+        //        },
+        //       new ApplicationUser
+        //        {
+        //             Id = "2",
+        //             Name = "Kalle",
+        //             Age = 12,
+        //             UserName = "Kalle"
+        //        },
+        //    };
 
-        }
+        //}
     }
 }
