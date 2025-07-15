@@ -2,14 +2,17 @@
 using Companies.Infrastructure.Data;
 using Companies.Presentation.Controllers.ControllersForTestDemo;
 using Companies.Shared.DTOs;
+using Controller.Tests.Extensions;
 using Domain.Contracts;
 using Domain.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,6 +21,7 @@ namespace Controller.Tests
     public class RepoControllerTest
     {
         private Mock<IEmployeeRepository> mockRepo;
+        private Mock<UserManager<ApplicationUser>> userManager;
         private RepositoryController sut;
 
         public RepoControllerTest()
@@ -29,7 +33,10 @@ namespace Controller.Tests
                 cfg.AddProfile<AutoMapperProfile>();
             }));
 
-            sut = new RepositoryController(mockRepo.Object, mapper);
+            var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
+            userManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
+
+            sut = new RepositoryController(mockRepo.Object, mapper, userManager.Object);
         }
 
         [Fact]
@@ -37,6 +44,10 @@ namespace Controller.Tests
         {
             var users = GetUsers();
             mockRepo.Setup(x => x.GetEmployeesAsync(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(users);
+
+            // sut.SetUserIsAuth(true);
+
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { UserName = "Kalle" });
 
             var result = await sut.GetEmployees(1);
 

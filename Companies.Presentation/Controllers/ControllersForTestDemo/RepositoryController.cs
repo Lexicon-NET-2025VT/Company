@@ -11,6 +11,7 @@ using System.Text.Json;
 using Domain.Contracts;
 using AutoMapper;
 using Companies.Shared.DTOs;
+using System.Security.Claims;
 
 namespace Companies.Presentation.Controllers.ControllersForTestDemo
 {
@@ -20,16 +21,24 @@ namespace Companies.Presentation.Controllers.ControllersForTestDemo
     {
         private readonly IEmployeeRepository employeeRepo;
         private readonly IMapper mapper;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public RepositoryController(IEmployeeRepository employeeRepo, IMapper mapper)
+        public RepositoryController(IEmployeeRepository employeeRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             this.employeeRepo = employeeRepo;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployees(int id)
         {
+            //var userId2 = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            //if (string.IsNullOrEmpty(userId2)) throw new NullReferenceException(nameof(userId2));
+
+            var user = await userManager.GetUserAsync(User);
+            if(user is null) throw new ArgumentException(nameof(user));
+
             var employees = await employeeRepo.GetEmployeesAsync(id);
             var dto = mapper.Map<IEnumerable<EmployeeDto>>(employees);
             return Ok(dto);
