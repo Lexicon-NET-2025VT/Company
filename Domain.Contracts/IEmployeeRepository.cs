@@ -14,6 +14,6 @@ namespace Domain.Contracts
         void Update(ApplicationUser employee);
 
         Task<IEnumerable<ApplicationUser>> GetEmployeesAsync(int companyId, bool trackChanges = false);
-        Task<ApplicationUser?> GetEmployeeAsync(int companyId, int employeeId, bool trackChanges = false);
+        Task<ApplicationUser?> GetEmployeeAsync(int companyId, string employeeId, bool trackChanges = false);
     }
 }
