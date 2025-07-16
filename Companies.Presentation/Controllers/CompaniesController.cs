@@ -82,17 +82,19 @@ namespace Companies.Presentation.Controllers
 
         //// POST: api/Companies
         //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<CompanyDto>> PostCompany(CompanyCreateDto dto)
-        //{
-        //    var company = _mapper.Map<Company>(dto);
-        //    _uow.CompanyRepository.Create(company);
-        //    await _uow.CompleteAsync();
+        [HttpPost]
+        public async Task<ActionResult<CompanyDto>> PostCompany(CompanyCreateDto dto)
+        {
+            //var company = _mapper.Map<Company>(dto);
+            //_uow.CompanyRepository.Create(company);
+            //await _uow.CompleteAsync();
 
-        //    var createdCompany = _mapper.Map<CompanyDto>(company);
+            //var createdCompany = _mapper.Map<CompanyDto>(company);
 
-        //    return CreatedAtAction(nameof(GetCompany), new { id = company.Id }, createdCompany);
-        //}
+            var createdCompany = await _serviceManager.CompanyService.PostAsync(dto);
+
+            return CreatedAtAction(nameof(GetCompany), new { id = createdCompany.Id }, createdCompany);
+        }
 
         //// DELETE: api/Companies/5
         //[HttpDelete("{id}")]

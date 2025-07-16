@@ -1,4 +1,5 @@
 ﻿using Companies.API.DTOs;
+using Companies.Shared.DTOs;
 using Companies.Shared.Request;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,6 @@ namespace Services.Contracts
     {
         Task<(IEnumerable<CompanyDto> companyDtos, MetaData metaData)> GetCompaniesAsync(CompanyRequestParams requestParams, bool trackChanges = false);
         Task<CompanyDto> GetCompanyAsync(int id, bool trackChanges = false);
+        Task<CompanyDto> PostAsync(CompanyCreateDto dto);
     }
 }

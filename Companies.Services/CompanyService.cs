@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Companies.API.DTOs;
 using Companies.Services;
+using Companies.Shared.DTOs;
 using Companies.Shared.Request;
 using Domain.Contracts;
 using Domain.Models.Entities;
@@ -44,6 +45,14 @@ namespace Companies.Services
                 throw new CompanyNotFoundException(id);
             }
 
+            return _mapper.Map<CompanyDto>(company);
+        }
+
+        public async Task<CompanyDto> PostAsync(CompanyCreateDto dto)
+        {
+            var company = _mapper.Map<Company>(dto);
+            _uow.CompanyRepository.Create(company);
+            await _uow.CompleteAsync();
             return _mapper.Map<CompanyDto>(company);
         }
     }
