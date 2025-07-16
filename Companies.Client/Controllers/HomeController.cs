@@ -101,7 +101,7 @@ namespace Companies.Client.Controllers
         private async Task PatchWithRequestMessageAsync()
         {
             var patchDocument = new JsonPatchDocument<EmployeeUpdateDto>();
-            patchDocument.Replace(e => e.Age, 95);
+            patchDocument.Replace(e => e.Age, 40);
             patchDocument.Replace(e => e.Name, "Kalle Anka");
 
             var serializedPatchDoc = Newtonsoft.Json.JsonConvert.SerializeObject(patchDocument);

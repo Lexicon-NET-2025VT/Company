@@ -149,6 +149,7 @@ namespace Companies.Presentation.Controllers
 
             var dto = _mapper.Map<EmployeeUpdateDto>(employeeToPatch);
             // patchDocument.ApplyTo(dto, ModelState); // Todo: check, not working. Här patchas dto:n ihop med patchdokumentet.
+            patchDocument.ApplyTo(dto);
             TryValidateModel(dto);
 
             if(!ModelState.IsValid)
