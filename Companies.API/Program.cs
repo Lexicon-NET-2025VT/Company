@@ -104,6 +104,7 @@ namespace Companies.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                // Comment out when running integration test
                 await app.SeedDataAsync();
             }
 
