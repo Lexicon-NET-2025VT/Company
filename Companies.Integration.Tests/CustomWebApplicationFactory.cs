@@ -59,8 +59,11 @@ namespace Companies.Integration.Tests
                                     }
                                 ]);
                 Context.SaveChanges();
+
             });
 
+            // Exkludes SeedData when running Integration test (check in program.cs)
+            builder.UseSetting("InTest", "1");
         }
 
         public override ValueTask DisposeAsync()

@@ -104,8 +104,9 @@ namespace Companies.API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                // Comment out when running integration test
-                await app.SeedDataAsync();
+
+                // Checks if Integrationtest, with InMemory-db is used
+                if (builder.Configuration?.GetValue<string>("InTest") != "1") await app.SeedDataAsync();
             }
 
             app.UseHttpsRedirection();
